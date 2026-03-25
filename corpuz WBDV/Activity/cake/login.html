@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Login</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="auth-container">
+  <h2>Welcome Back</h2>
+  <input type="text" placeholder="Username" id="user">
+  <input type="password" placeholder="Password" id="pass">
+  <button class="btn" onclick="login()">Sign In</button>
+</div>
+
+<script>
+function login(){
+  const u = document.getElementById("user").value;
+  const p = document.getElementById("pass").value;
+
+  if(u === "admin" && p === "1234"){
+    alert("Welcome!");
+    window.location.href = "index.html";
+  } else {
+    alert("Wrong credentials");
+  }
+}
+</script>
+
+</body>
+</html>
