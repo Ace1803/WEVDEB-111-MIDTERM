@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Velvet Crust</title>
+<style>
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background: linear-gradient(135deg, #f8e8e0, #f3d5c0);
+}
+
+header {
+  display: flex;
+  justify-content: space-between;
+  padding: 15px 30px;
+  background: rgba(255,255,255,0.3);
+  backdrop-filter: blur(10px);
+}
+
+nav a {
+  margin: 0 10px;
+  text-decoration: none;
+  color: #333;
+  font-weight: bold;
+}
+
+.container {
+  display: none;
+  padding: 20px;
+}
+
+.active {
+  display: block;
+}
+
+.card {
+  background: rgba(255,255,255,0.25);
+  backdrop-filter: blur(15px);
+  border-radius: 20px;
+  padding: 20px;
+  max-width: 600px;
+  margin: auto;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.2);
+}
+
+button {
+  background: #f5e6cc;
+  border: none;
+  padding: 10px 15px;
+  border-radius: 10px;
+  cursor: pointer;
+  margin-top: 10px;
+}
+
+.products {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 20px;
+}
+
+.product {
+  background: rgba(255,255,255,0.3);
+  padding: 15px;
+  border-radius: 15px;
+  text-align: center;
+}
+
+input {
+  width: 100%;
+  padding: 10px;
+  margin: 5px 0;
+  border-radius: 10px;
+  border: none;
+}
+</style>
+</head>
+<body>
+
+<header>
+  <h2>Velvet Crust</h2>
+  <nav>
+    <a href="#" onclick="showPage('home')">Home</a>
+    <a href="#" onclick="showPage('about')">About</a>
+    <a href="#" onclick="showPage('cart')">Cart</a>
+    <a href="#" onclick="showPage('login')">Login</a>
+  </nav>
+</header>
+
+<div id="home" class="container active">
+  <div class="card">
+    <h2>Welcome to Velvet Crust</h2>
+    <p>Order custom cakes with beautiful designs!</p>
+  </div>
+
+  <div class="products">
+    <div class="product">
+      <img src="choc cake.jpg" alt="Chocolate Cake" style="width:100%; max-height:150px; object-fit:cover; border-radius:10px; margin-bottom:10px;">
+      <h3>Chocolate Cake</h3>
+      <p>₱500</p>
+      <button onclick="addToCart('Chocolate Cake')">Add to Cart</button>
+    </div>
+    <div class="product">
+      <img src="https://images.unsplash.com/photo-1614707267537-b85aaf00c4b7" alt="Red Velvet" style="width:100%; max-height:150px; object-fit:cover; border-radius:10px; margin-bottom:10px;">
+      <h3>Red Velvet</h3>
+      <p>₱650</p>
+      <button onclick="addToCart('Red Velvet')">Add to Cart</button>
+    </div>
+    <div class="product">
+      <img src="https://images.unsplash.com/photo>
+      <h3>Strawberry Cake</h3>
+      <p>₱600</p>
+      <button onclick="addToCart('Strawberry Cake')">Add to Cart</button>
+    </div>
+  </div>
+</div>
+
+<div id="about" class="container">
+  <div class="card">
+    <h2>About Us</h2>
+    <p>Velvet Crust is a bakery that creates custom cakes for every occasion. We focus on design, taste, and quality.</p>
+  </div>
+</div>
+
+<div id="cart" class="container">
+  <div class="card">
+    <h2>Your Cart</h2>
+    <ul id="cartList"></ul>
+  </div>
+</div>
+
+<div id="login" class="container">
+  <div class="card">
+    <h2>Login</h2>
+    <input type="text" id="username" placeholder="Username">
+    <input type="password" id="password" placeholder="Password">
+    <button onclick="login()">Login</button>
+    <p id="loginMsg"></p>
+  </div>
+</div>
+
+<script>
+let cart = [];
+
+function showPage(page) {
+  document.querySelectorAll('.container').forEach(el => el.classList.remove('active'));
+  document.getElementById(page).classList.add('active');
+}
+
+function addToCart(item) {
+  cart.push(item);
+  alert(item + ' added to cart!');
+  updateCart();
+}
+
+function updateCart() {
+  const list = document.getElementById('cartList');
+  list.innerHTML = '';
+  cart.forEach(item => {
+    const li = document.createElement('li');
+    li.textContent = item;
+    list.appendChild(li);
+  });
+}
+
+function login() {
+  const user = document.getElementById('username').value;
+  const pass = document.getElementById('password').value;
+
+  if(user === 'admin' && pass === '1234') {
+    document.getElementById('loginMsg').textContent = 'Login Successful!';
+  } else {
+    document.getElementById('loginMsg').textContent = 'Invalid credentials';
+  }
+}
+</script>
+
+</body>
+</html>
