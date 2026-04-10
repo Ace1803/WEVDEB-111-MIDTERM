@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SwiftCart</title>
+<style>
+body{ margin:0; font-family:Arial, sans-serif; }
+
+header{
+  display:flex; justify-content:space-between; padding:15px 30px; background:#111; color:#fff;
+}
+nav a{ color:white; margin:0 10px; text-decoration:none; font-weight:bold; }
+
+.container{ display:none; }
+.active{ display:block; }
+
+/* HOME */
+.home{
+  padding:30px;
+}
+.products{
+  display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); gap:20px;
+}
+.product{
+  border:1px solid #ddd; padding:15px; border-radius:10px; text-align:center;
+}
+button{
+  padding:10px 15px; border:none; background:#111; color:white; border-radius:6px; cursor:pointer;
+}
+
+/* SPLIT LOGIN */
+.split{
+  display:flex; height:90vh;
+}
+.left{
+  flex:1;
+  background:url('https://images.unsplash.com/photo-1515169067868-5387ec356754') no-repeat center/cover;
+}
+.right{
+  flex:1; display:flex; justify-content:center; align-items:center; background:#f5f5f5;
+}
+.login-box{
+  background:white; padding:30px; border-radius:10px; box-shadow:0 4px 10px rgba(0,0,0,0.2);
+  width:80%; max-width:300px;
+}
+input{
+  width:100%; padding:10px; margin:5px 0; border-radius:6px; border:1px solid #ccc;
+}
+
+.card{
+  padding:20px; max-width:600px; margin:auto;
+}
+</style>
+</head>
+<body>
+
+<header>
+  <h2>SwiftCart</h2>
+  <nav>
+    <a href="#" onclick="showPage('home')">Home</a>
+    <a href="#" onclick="showPage('about')">About</a>
+    <a href="#" onclick="showPage('contact')">Contact</a>
+    <a href="#" onclick="showPage('login')">Login</a>
+  </nav>
+</header>
+
+<div id="home" class="container active home">
+  <h2>Product Catalog</h2>
+  <div class="products">
+    <div class="product">
+      <img src="headphone.jpg" style="width:100%; max-height:150px; object-fit:cover; border-radius:8px; margin-bottom:10px;">
+      <h3>Headphones</h3>
+      <p>₱1200</p>
+      <button>Add to Cart</button>
+    </div>
+    <div class="product">
+      <img src="smart watch.png" style="width:100%; max-height:150px; object
+    <div class="product">
+      <h3>Smart Watch</h3>
+      <p>₱2500</p>
+      <button>Add to Cart</button>
+    </div>
+    <div class="product">
+		<img src="sneakers.jpg" style="width:100%; max-height:150px; object
+	<div class="product">
+      <h3>Sneakers</h3>
+      <p>₱3000</p>
+      <button>Add to Cart</button>
+    </div>
+  </div>
+</div>
+
+<div id="about" class="container">
+  <div class="card">
+    <h2>About Us</h2>
+    <p>SwiftCart is your fast and reliable online store for everyday essentials and trendy products.</p>
+  </div>
+</div>
+
+<div id="contact" class="container">
+  <div class="card">
+    <h2>Contact Us</h2>
+    <input type="text" placeholder="Your Name">
+    <input type="email" placeholder="Your Email">
+    <textarea placeholder="Message" rows="4"></textarea>
+    <button>Send Message</button>
+  </div>
+</div>
+
+<div id="login" class="container">
+  <div class="split">
+    <div class="left"></div>
+    <div class="right">
+      <div class="login-box">
+        <h2>Login</h2>
+        <input type="text" id="username" placeholder="Username">
+        <input type="password" id="password" placeholder="Password">
+        <button onclick="login()">Login</button>
+        <p id="loginMsg"></p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+function showPage(page){
+  document.querySelectorAll('.container').forEach(el=>el.classList.remove('active'));
+  document.getElementById(page).classList.add('active');
+}
+
+function login(){
+  const user=document.getElementById('username').value;
+  const pass=document.getElementById('password').value;
+
+  if(user==='admin' && pass==='1234'){
+    document.getElementById('loginMsg').textContent='Login Successful!';
+  } else {
+    document.getElementById('loginMsg').textContent='Invalid credentials';
+  }
+}
+</script>
+
+</body>
+</html>
