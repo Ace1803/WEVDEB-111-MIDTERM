@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LibryConnect</title>
+<style>
+body{
+  margin:0; font-family:'Segoe UI',sans-serif; background:#f4f1ea; color:#333;
+}
+header{
+  display:flex; justify-content:space-between; padding:15px 30px; background:#6b4f3b; color:white;
+}
+nav a{
+  color:white; text-decoration:none; margin:0 10px; font-weight:bold;
+}
+.container{ display:none; padding:30px; }
+.active{ display:block; }
+.card{
+  background:#fffaf0; border:2px solid #6b4f3b; padding:20px; border-radius:8px;
+  max-width:700px; margin:auto; box-shadow:4px 4px 0px #6b4f3b;
+}
+
+button{
+  background:#fdf6e3; border:2px dashed #6b4f3b; padding:12px 18px; border-radius:6px;
+  font-family:'Courier New',monospace; cursor:pointer; margin-top:10px;
+  box-shadow:3px 3px 0px #6b4f3b;
+}
+button:hover{
+  transform:translate(-2px,-2px);
+  box-shadow:5px 5px 0px #6b4f3b;
+}
+
+input, textarea{
+  width:100%; padding:10px; margin:6px 0; border:2px solid #6b4f3b; border-radius:6px;
+  background:#fff;
+}
+
+.search-box{
+  margin-top:15px;
+}
+
+.book-list{
+  display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); gap:15px; margin-top:20px;
+}
+.book{
+  border:2px solid #6b4f3b; padding:10px; border-radius:6px; background:#fffaf0;
+}
+</style>
+</head>
+<body>
+
+<header>
+  <h2>LibryConnect</h2>
+  <nav>
+    <a href="#" onclick="showPage('home')">Home</a>
+    <a href="#" onclick="showPage('about')">About</a>
+    <a href="#" onclick="showPage('contact')">Contact</a>
+    <a href="#" onclick="showPage('login')">Login</a>
+  </nav>
+</header>
+
+<div id="home" class="container active">
+  <div class="card">
+    <h2>Library Search</h2>
+    <p>Search books, manage members, and track loans.</p>
+    <div class="search-box">
+      <input type="text" placeholder="Search books...">
+      <button>Search</button>
+    </div>
+  </div>
+
+  <div class="book-list">
+    <div class="book">
+      <h3>To Kill a Mockingbird</h3>
+      <p>Status: Available</p>
+      <button>Borrow</button>
+    </div>
+    <div class="book">
+      <h3>1984</h3>
+      <p>Status: Loaned</p>
+      <button>Reserve</button>
+    </div>
+    <div class="book">
+      <h3>The Great Gatsby</h3>
+      <p>Status: Overdue</p>
+      <button>Notify</button>
+    </div>
+  </div>
+</div>
+
+<div id="about" class="container">
+  <div class="card">
+    <h2>About Us</h2>
+    <p>LibryConnect is a modern library system that helps manage books, members, and borrowing records efficiently.</p>
+  </div>
+</div>
+
+<div id="contact" class="container">
+  <div class="card">
+    <h2>Contact Us</h2>
+    <input type="text" placeholder="Your Name">
+    <input type="email" placeholder="Your Email">
+    <textarea rows="4" placeholder="Your Message"></textarea>
+    <button>Send Message</button>
+  </div>
+</div>
+
+<div id="login" class="container">
+  <div class="card">
+    <h2>Login</h2>
+    <input type="text" id="username" placeholder="Username">
+    <input type="password" id="password" placeholder="Password">
+    <button onclick="login()">Login</button>
+    <p id="loginMsg"></p>
+  </div>
+</div>
+
+<script>
+function showPage(page){
+  document.querySelectorAll('.container').forEach(el=>el.classList.remove('active'));
+  document.getElementById(page).classList.add('active');
+}
+
+function login(){
+  const user=document.getElementById('username').value;
+  const pass=document.getElementById('password').value;
+
+  if(user==='admin' && pass==='1234'){
+    document.getElementById('loginMsg').textContent='Login Successful!';
+  } else {
+    document.getElementById('loginMsg').textContent='Invalid credentials';
+  }
+}
+</script>
+
+</body>
+</html>
