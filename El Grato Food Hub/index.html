@@ -1,0 +1,755 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>El Grato Food Hub</title>
+
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: Arial, sans-serif;
+      scroll-behavior: smooth;
+    }
+
+    body {
+      background: #0d0d0d;
+      color: white;
+    }
+
+    header {
+      width: 100%;
+      padding: 18px 50px;
+      background: #050505;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: fixed;
+      top: 0;
+      left: 0;
+      z-index: 1000;
+      box-shadow: 0 5px 20px rgba(0,0,0,0.5);
+    }
+
+    .logo {
+      color: #d8b537;
+      font-size: 26px;
+      font-weight: bold;
+    }
+
+    nav {
+      display: flex;
+      align-items: center;
+      gap: 25px;
+    }
+
+    nav a,
+    .drop-btn {
+      color: white;
+      text-decoration: none;
+      font-weight: bold;
+      font-size: 15px;
+      cursor: pointer;
+      background: none;
+      border: none;
+    }
+
+    nav a:hover,
+    .drop-btn:hover {
+      color: #d8b537;
+    }
+
+    .dropdown {
+      position: relative;
+    }
+
+    .dropdown-content {
+      position: absolute;
+      top: 35px;
+      left: 0;
+      background: #181818;
+      min-width: 170px;
+      border-radius: 12px;
+      overflow: hidden;
+      opacity: 0;
+      transform: translateY(15px);
+      pointer-events: none;
+      transition: 0.3s ease;
+      border: 1px solid #333;
+    }
+
+    .dropdown:hover .dropdown-content {
+      opacity: 1;
+      transform: translateY(0);
+      pointer-events: auto;
+    }
+
+    .dropdown-content button {
+      width: 100%;
+      padding: 13px;
+      background: none;
+      border: none;
+      color: white;
+      text-align: left;
+      cursor: pointer;
+      font-weight: bold;
+    }
+
+    .dropdown-content button:hover {
+      background: #d8b537;
+      color: black;
+    }
+
+    section {
+      min-height: 100vh;
+      padding: 120px 60px 70px;
+    }
+
+    .home {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      background:
+        linear-gradient(rgba(0,0,0,0.75), rgba(0,0,0,0.85)),
+        url("https://images.unsplash.com/photo-1555939594-58d7cb561ad1?q=80&w=1400");
+      background-size: cover;
+      background-position: center;
+    }
+
+    .home-box {
+      background: rgba(15,15,15,0.9);
+      padding: 50px;
+      border-radius: 25px;
+      border: 1px solid #d8b537;
+      box-shadow: 0 15px 40px rgba(0,0,0,0.6);
+    }
+
+    .home h1 {
+      font-size: 48px;
+      color: #d8b537;
+      margin-bottom: 12px;
+    }
+
+    .home p {
+      font-size: 18px;
+      margin-bottom: 25px;
+    }
+
+    .home button {
+      width: auto;
+      padding: 13px 30px;
+      border-radius: 30px;
+    }
+
+    h2 {
+      text-align: center;
+      color: #d8b537;
+      font-size: 34px;
+      margin-bottom: 12px;
+    }
+
+    .section-subtitle {
+      text-align: center;
+      color: #aaa;
+      margin-bottom: 35px;
+    }
+
+    .menu-switch {
+      display: flex;
+      justify-content: center;
+      gap: 15px;
+      margin-bottom: 40px;
+      flex-wrap: wrap;
+    }
+
+    .menu-switch button {
+      width: auto;
+      padding: 12px 24px;
+      border-radius: 30px;
+      background: #1b1b1b;
+      color: white;
+      border: 1px solid #d8b537;
+    }
+
+    .menu-switch button.active,
+    .menu-switch button:hover {
+      background: #d8b537;
+      color: black;
+    }
+
+    .menu-page {
+      display: none;
+      animation: fadeSlide 0.45s ease;
+    }
+
+    .menu-page.active {
+      display: block;
+    }
+
+    @keyframes fadeSlide {
+      from {
+        opacity: 0;
+        transform: translateY(25px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .menu-grid {
+      max-width: 1200px;
+      margin: auto;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 30px;
+    }
+
+    .card {
+      background: #191919;
+      border-radius: 20px;
+      overflow: hidden;
+      border: 1px solid #2d2d2d;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.45);
+      transition: 0.3s ease;
+    }
+
+    .card:hover {
+      transform: translateY(-10px);
+      border-color: #d8b537;
+      box-shadow: 0 15px 35px rgba(216,181,55,0.15);
+    }
+
+    .card img {
+      width: 100%;
+      height: 180px;
+      object-fit: cover;
+    }
+
+    .card-body {
+      padding: 20px;
+      text-align: center;
+    }
+
+    .card h3 {
+      font-size: 20px;
+      margin-bottom: 15px;
+    }
+
+    select {
+      width: 100%;
+      padding: 12px;
+      background: #2b2b2b;
+      color: white;
+      border: 1px solid #444;
+      border-radius: 10px;
+      margin-bottom: 15px;
+      outline: none;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+
+    select:hover,
+    select:focus {
+      border-color: #d8b537;
+      box-shadow: 0 0 10px rgba(216,181,55,0.3);
+    }
+
+    button {
+      width: 100%;
+      padding: 12px;
+      background: #d8b537;
+      color: black;
+      border: none;
+      border-radius: 10px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+
+    button:hover {
+      background: white;
+      transform: scale(1.02);
+    }
+
+    .content-box,
+    form {
+      max-width: 600px;
+      margin: auto;
+      background: #191919;
+      padding: 30px;
+      border-radius: 20px;
+      border: 1px solid #333;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.45);
+      text-align: center;
+    }
+
+    .content-box p {
+      line-height: 1.8;
+      color: #ddd;
+    }
+
+    input,
+    textarea {
+      width: 100%;
+      padding: 13px;
+      margin: 10px 0;
+      border: 1px solid #333;
+      border-radius: 10px;
+      background: #252525;
+      color: white;
+      outline: none;
+    }
+
+    input:focus,
+    textarea:focus {
+      border-color: #d8b537;
+    }
+
+    textarea {
+      height: 120px;
+      resize: none;
+    }
+
+    .cart-item {
+      background: #252525;
+      padding: 15px;
+      border-radius: 12px;
+      margin-bottom: 12px;
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      align-items: center;
+      text-align: left;
+    }
+
+    .cart-item strong {
+      color: #d8b537;
+    }
+
+    .cart-remove {
+      width: auto;
+      padding: 8px 12px;
+      background: #b92d2d;
+      color: white;
+      border-radius: 8px;
+    }
+
+    .cart-total {
+      margin-top: 20px;
+      font-size: 22px;
+      color: #d8b537;
+      font-weight: bold;
+    }
+
+    footer {
+      text-align: center;
+      padding: 25px;
+      background: #050505;
+      color: #aaa;
+    }
+
+    @media (max-width: 850px) {
+      header {
+        flex-direction: column;
+        padding: 18px;
+      }
+
+      nav {
+        margin-top: 15px;
+        gap: 12px;
+        flex-wrap: wrap;
+        justify-content: center;
+      }
+
+      section {
+        padding: 150px 25px 60px;
+      }
+
+      .home h1 {
+        font-size: 36px;
+      }
+
+      .home-box {
+        padding: 35px 25px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <header>
+    <div class="logo">El Grato</div>
+
+    <nav>
+      <a href="#home">Home</a>
+
+      <div class="dropdown">
+        <button class="drop-btn">Menu ▾</button>
+        <div class="dropdown-content">
+          <button onclick="showMenu('best')">Best Seller</button>
+          <button onclick="showMenu('regular')">Regular Menu</button>
+          <button onclick="showMenu('special')">Special Menu</button>
+        </div>
+      </div>
+
+      <a href="#story">Our Story</a>
+      <a href="#cart">Cart</a>
+      <a href="#contact">Contact Us</a>
+      <a href="#feedback">Feed Back</a>
+      <a href="#login">Login</a>
+      <a href="#register">Register</a>
+    </nav>
+  </header>
+
+  <section id="home" class="home">
+    <div class="home-box">
+      <h1>El Grato Food Hub</h1>
+      <p>Affordable Pulutan & Filipino Meals</p>
+      <button onclick="showMenu('best')">Order Now</button>
+    </div>
+  </section>
+
+  <section id="menu">
+    <h2>Our Menu</h2>
+    <p class="section-subtitle">Choose your favorite El Grato meals</p>
+
+    <div class="menu-switch">
+      <button id="btn-best" class="active" onclick="showMenu('best')">Best Seller</button>
+      <button id="btn-regular" onclick="showMenu('regular')">Regular Menu</button>
+      <button id="btn-special" onclick="showMenu('special')">Special Menu</button>
+    </div>
+
+    <div id="best" class="menu-page active">
+      <h2>Best Seller</h2>
+      <p class="section-subtitle">Customer favorites</p>
+
+      <div class="menu-grid">
+        <div class="card">
+          <img src="145d5c89-4abb-458b-81bc-df0e915b58aa.jpg" alt="Crispy Ulo">
+          <div class="card-body">
+            <h3>Crispy Ulo</h3>
+            <select id="best-ulo">
+              <option value="Small|500">Small - ₱500</option>
+              <option value="Medium|600">Medium - ₱600</option>
+              <option value="Large|700">Large - ₱700</option>
+              <option value="Jumbo|800">Jumbo - ₱800</option>
+              <option value="Super Jumbo|900">Super Jumbo - ₱900</option>
+              <option value="Monster Size|1000">Monster Size - ₱1000</option>
+            </select>
+            <button onclick="addToCart('Crispy Ulo', 'best-ulo')">Add to Cart</button>
+          </div>
+        </div>
+
+        <div class="card">
+          <img src="11105c8e-e3f0-43fe-9bf6-39b40b0d687e.jpg" alt="Crispy Dila">
+          <div class="card-body">
+            <h3>Crispy Dila</h3>
+            <select id="best-dila">
+              <option value="Regular|280">Regular - ₱280</option>
+              <option value="Large|380">Large - ₱380</option>
+            </select>
+            <button onclick="addToCart('Crispy Dila', 'best-dila')">Add to Cart</button>
+          </div>
+        </div>
+
+        <div class="card">
+          <img src="9976318c-9f09-441e-bef2-c10809a51b19.jpg" alt="Lechon Belly">
+          <div class="card-body">
+            <h3>Lechon Belly</h3>
+            <select id="best-belly">
+              <option value="Small 3kg|2300">Small 3kg - ₱2300</option>
+              <option value="Medium 4kg|3000">Medium 4kg - ₱3000</option>
+              <option value="Large 5kg|3700">Large 5kg - ₱3700</option>
+              <option value="Extra Large 6kg|4400">Extra Large 6kg - ₱4400</option>
+            </select>
+            <button onclick="addToCart('Lechon Belly', 'best-belly')">Add to Cart</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div id="regular" class="menu-page">
+      <h2>Regular Menu</h2>
+      <p class="section-subtitle">Daily favorites for everyone</p>
+
+      <div class="menu-grid">
+        <div class="card">
+          <img src="145d5c89-4abb-458b-81bc-df0e915b58aa.jpg" alt="Crispy Ulo">
+          <div class="card-body">
+            <h3>Crispy Ulo</h3>
+            <select id="reg-ulo">
+              <option value="Small|500">Small - ₱500</option>
+              <option value="Medium|600">Medium - ₱600</option>
+              <option value="Large|700">Large - ₱700</option>
+              <option value="Jumbo|800">Jumbo - ₱800</option>
+              <option value="Super Jumbo|900">Super Jumbo - ₱900</option>
+              <option value="Monster Size|1000">Monster Size - ₱1000</option>
+            </select>
+            <button onclick="addToCart('Crispy Ulo', 'reg-ulo')">Add to Cart</button>
+          </div>
+        </div>
+
+        <div class="card">
+          <img src="af3fe174-0c92-4627-961a-de443febc84e.jpg" alt="Fried Baga">
+          <div class="card-body">
+            <h3>Fried Baga</h3>
+            <select id="reg-baga">
+              <option value="Regular|250">Regular - ₱250</option>
+              <option value="Large|350">Large - ₱350</option>
+            </select>
+            <button onclick="addToCart('Fried Baga', 'reg-baga')">Add to Cart</button>
+          </div>
+        </div>
+
+        <div class="card">
+          <img src="70f132ac-6417-4549-9781-d571ae38701f.jpg" alt="Tanglad Fried Chicken">
+          <div class="card-body">
+            <h3>Tanglad Fried Chicken</h3>
+            <select id="reg-chicken">
+              <option value="Half|150">Half - ₱150</option>
+              <option value="Whole|300">Whole - ₱300</option>
+            </select>
+            <button onclick="addToCart('Tanglad Fried Chicken', 'reg-chicken')">Add to Cart</button>
+          </div>
+        </div>
+
+        <div class="card">
+          <img src="11105c8e-e3f0-43fe-9bf6-39b40b0d687e.jpg" alt="Fried Dila">
+          <div class="card-body">
+            <h3>Fried Dila</h3>
+            <select id="reg-dila">
+              <option value="Regular|280">Regular - ₱280</option>
+              <option value="Large|380">Large - ₱380</option>
+            </select>
+            <button onclick="addToCart('Fried Dila', 'reg-dila')">Add to Cart</button>
+          </div>
+        </div>
+
+        <div class="card">
+          <img src="ee6694f7-7993-4046-9d9c-052e1edb39e4.jpg" alt="Fried Itik">
+          <div class="card-body">
+            <h3>Fried Itik</h3>
+            <select id="reg-itik">
+              <option value="Regular|300">Regular - ₱300</option>
+              <option value="Large|450">Large - ₱450</option>
+            </select>
+            <button onclick="addToCart('Fried Itik', 'reg-itik')">Add to Cart</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div id="special" class="menu-page">
+      <h2>Special Menu</h2>
+      <p class="section-subtitle">Special meals and promos</p>
+
+      <div class="menu-grid">
+        <div class="card">
+          <img src="9976318c-9f09-441e-bef2-c10809a51b19.jpg" alt="Lechon Belly">
+          <div class="card-body">
+            <h3>Lechon Belly</h3>
+            <select id="sp-belly">
+              <option value="Small 3kg|2300">Small 3kg - ₱2300</option>
+              <option value="Medium 4kg|3000">Medium 4kg - ₱3000</option>
+              <option value="Large 5kg|3700">Large 5kg - ₱3700</option>
+              <option value="Extra Large 6kg|4400">Extra Large 6kg - ₱4400</option>
+            </select>
+            <button onclick="addToCart('Lechon Belly', 'sp-belly')">Add to Cart</button>
+          </div>
+        </div>
+
+        <div class="card">
+          <img src="0422d1e5-66b2-4154-b974-37d0cb6aec75.jpg" alt="Crispy Pata">
+          <div class="card-body">
+            <h3>Crispy Pata</h3>
+            <select id="sp-pata">
+              <option value="Small|500">Small - ₱500</option>
+              <option value="Medium|750">Medium - ₱750</option>
+              <option value="Large|850">Large - ₱850</option>
+              <option value="Jumbo|950">Jumbo - ₱950</option>
+              <option value="Super Jumbo|1050">Super Jumbo - ₱1050</option>
+            </select>
+            <button onclick="addToCart('Crispy Pata', 'sp-pata')">Add to Cart</button>
+          </div>
+        </div>
+
+        <div class="card">
+          <img src="19dc2951-4dc4-4042-800d-b6fc6ce168ba.jpg" alt="Crispy Pata Buy One Take One">
+          <div class="card-body">
+            <h3>Crispy Pata Buy 1 Take 1</h3>
+            <select id="sp-b1t1">
+              <option value="Medium B1T1|750">Medium B1T1 - ₱750</option>
+              <option value="Large B1T1|850">Large B1T1 - ₱850</option>
+              <option value="Jumbo B1T1|950">Jumbo B1T1 - ₱950</option>
+              <option value="Super Jumbo B1T1|1050">Super Jumbo B1T1 - ₱1050</option>
+            </select>
+            <button onclick="addToCart('Crispy Pata Buy 1 Take 1', 'sp-b1t1')">Add B1T1</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="story">
+    <h2>Our Story</h2>
+    <div class="content-box">
+      <p>
+        El Grato Food Hub started with a passion for Filipino food.
+        We serve affordable, delicious, and satisfying meals for families,
+        friends, and food lovers who enjoy classic Filipino flavors.
+      </p>
+    </div>
+  </section>
+
+  <section id="cart">
+    <h2>Your Cart</h2>
+    <p class="section-subtitle">Review your selected orders</p>
+
+    <div class="content-box">
+      <div id="cartItems">No items added yet.</div>
+      <div id="cartTotal" class="cart-total"></div>
+      <br>
+      <button onclick="clearCart()">Clear Cart</button>
+    </div>
+  </section>
+
+  <section id="contact">
+    <h2>Contact Us</h2>
+    <form onsubmit="submitForm(event, 'Your message has been sent!')">
+      <input type="text" placeholder="Your Name" required>
+      <input type="email" placeholder="Your Email" required>
+      <input type="text" placeholder="Contact Number" required>
+      <textarea placeholder="Your Message" required></textarea>
+      <button type="submit">Send Message</button>
+    </form>
+  </section>
+
+  <section id="feedback">
+    <h2>Feed Back</h2>
+    <form onsubmit="submitForm(event, 'Thank you for your feedback!')">
+      <input type="text" placeholder="Your Name" required>
+      <textarea placeholder="Write your feedback here..." required></textarea>
+      <button type="submit">Submit Feedback</button>
+    </form>
+  </section>
+
+  <section id="login">
+    <h2>Login</h2>
+    <form onsubmit="submitForm(event, 'Login button clicked!')">
+      <input type="email" placeholder="Email Address" required>
+      <input type="password" placeholder="Password" required>
+      <button type="submit">Login</button>
+    </form>
+  </section>
+
+  <section id="register">
+    <h2>Register</h2>
+    <form onsubmit="submitForm(event, 'Register button clicked!')">
+      <input type="text" placeholder="Full Name" required>
+      <input type="email" placeholder="Email Address" required>
+      <input type="password" placeholder="Password" required>
+      <input type="password" placeholder="Confirm Password" required>
+      <button type="submit">Register</button>
+    </form>
+  </section>
+
+  <footer>
+    © 2026 El Grato Food Hub. All Rights Reserved.
+  </footer>
+
+  <script>
+    let cart = [];
+
+    function showMenu(menuId) {
+      document.getElementById("menu").scrollIntoView();
+
+      const pages = document.querySelectorAll(".menu-page");
+      const buttons = document.querySelectorAll(".menu-switch button");
+
+      pages.forEach(page => {
+        page.classList.remove("active");
+      });
+
+      buttons.forEach(button => {
+        button.classList.remove("active");
+      });
+
+      document.getElementById(menuId).classList.add("active");
+      document.getElementById("btn-" + menuId).classList.add("active");
+    }
+
+    function addToCart(productName, selectId) {
+      const select = document.getElementById(selectId);
+      const selectedValue = select.value;
+      const selectedText = select.options[select.selectedIndex].text;
+
+      const parts = selectedValue.split("|");
+      const size = parts[0];
+      const price = Number(parts[1]);
+
+      cart.push({
+        product: productName,
+        size: size,
+        price: price
+      });
+
+      updateCart();
+      alert(productName + " added to cart!");
+    }
+
+    function updateCart() {
+      const cartItems = document.getElementById("cartItems");
+      const cartTotal = document.getElementById("cartTotal");
+
+      if (cart.length === 0) {
+        cartItems.innerHTML = "No items added yet.";
+        cartTotal.innerHTML = "";
+        return;
+      }
+
+      let total = 0;
+      let html = "";
+
+      cart.forEach((item, index) => {
+        total += item.price;
+
+        html += `
+          <div class="cart-item">
+            <div>
+              <strong>${item.product}</strong><br>
+              ${item.size} - ₱${item.price}.00
+            </div>
+            <button class="cart-remove" onclick="removeItem(${index})">Remove</button>
+          </div>
+        `;
+      });
+
+      cartItems.innerHTML = html;
+      cartTotal.innerHTML = "Total: ₱" + total + ".00";
+    }
+
+    function removeItem(index) {
+      cart.splice(index, 1);
+      updateCart();
+    }
+
+    function clearCart() {
+      cart = [];
+      updateCart();
+      alert("Cart cleared!");
+    }
+
+    function submitForm(event, message) {
+      event.preventDefault();
+      alert(message);
+      event.target.reset();
+    }
+  </script>
+
+</body>
+</html>
