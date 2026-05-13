@@ -1,0 +1,1149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>El Grato Food Hub</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0f0d0a;
+    --surface: #1a1710;
+    --surface2: #242018;
+    --gold: #c9a84c;
+    --gold-light: #e8c96a;
+    --cream: #f5f0e8;
+    --red: #c0392b;
+    --red-light: #e74c3c;
+    --text: #f5f0e8;
+    --muted: #9a9080;
+    --border: rgba(201,168,76,0.2);
+    --radius: 12px;
+    --shadow: 0 8px 40px rgba(0,0,0,0.6);
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { font-family:'DM Sans',sans-serif; background:var(--bg); color:var(--text); overflow-x:hidden; }
+  h1,h2,h3,h4 { font-family:'Playfair Display',serif; }
+
+  /* ---- NAVBAR ---- */
+  #navbar {
+    position:fixed; top:0; left:0; right:0; z-index:1000;
+    background:rgba(15,13,10,0.95); backdrop-filter:blur(12px);
+    border-bottom:1px solid var(--border);
+    padding:0 5%; display:flex; align-items:center; justify-content:space-between; height:70px;
+  }
+  .nav-logo { font-family:'Playfair Display',serif; font-size:1.5rem; font-weight:900; color:var(--gold); letter-spacing:1px; cursor:pointer; }
+  .nav-logo span { color:var(--red-light); }
+  .nav-links { display:flex; gap:2rem; list-style:none; }
+  .nav-links a { color:var(--muted); text-decoration:none; font-size:0.9rem; font-weight:500; letter-spacing:0.5px; cursor:pointer; transition:color 0.2s; }
+  .nav-links a:hover, .nav-links a.active { color:var(--gold); }
+  .nav-right { display:flex; gap:1rem; align-items:center; }
+  .btn { padding:0.5rem 1.4rem; border-radius:50px; font-family:'DM Sans',sans-serif; font-weight:600; font-size:0.85rem; cursor:pointer; transition:all 0.2s; border:none; }
+  .btn-outline { background:transparent; border:1.5px solid var(--gold); color:var(--gold); }
+  .btn-outline:hover { background:var(--gold); color:var(--bg); }
+  .btn-primary { background:var(--gold); color:var(--bg); }
+  .btn-primary:hover { background:var(--gold-light); }
+  .btn-danger { background:var(--red); color:#fff; }
+  .btn-danger:hover { background:var(--red-light); }
+  #cart-btn { position:relative; background:var(--surface2); border:1.5px solid var(--border); color:var(--gold); padding:0.5rem 1.2rem; border-radius:50px; cursor:pointer; font-size:0.85rem; font-weight:600; }
+  #cart-count { position:absolute; top:-6px; right:-6px; background:var(--red); color:#fff; border-radius:50%; width:20px; height:20px; font-size:0.7rem; display:flex; align-items:center; justify-content:center; font-weight:700; }
+  #user-info { display:none; align-items:center; gap:0.7rem; }
+  #user-avatar { width:36px; height:36px; border-radius:50%; background:var(--gold); display:flex; align-items:center; justify-content:center; font-weight:700; color:var(--bg); font-size:0.9rem; }
+  #user-name { font-size:0.85rem; color:var(--cream); font-weight:500; }
+
+  /* ---- PAGES ---- */
+  .page { display:none; min-height:100vh; padding-top:70px; animation:fadeIn 0.4s ease; }
+  .page.active { display:block; }
+  @keyframes fadeIn { from{opacity:0;transform:translateY(10px)} to{opacity:1;transform:translateY(0)} }
+
+  /* ---- HOME ---- */
+  #home-hero {
+    height:92vh; position:relative; display:flex; align-items:center; justify-content:center; text-align:center;
+    background:linear-gradient(135deg,#0f0d0a 0%,#1a1408 50%,#0f0d0a 100%);
+    overflow:hidden;
+  }
+  .hero-bg {
+    position:absolute; inset:0; opacity:0.55;
+    background-image:url('https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=1600&q=80');
+    background-size:cover; background-position:center;
+    filter:sepia(30%);
+  }
+  .hero-overlay { position:absolute; inset:0; background:radial-gradient(ellipse at center,rgba(0,0,0,0.35) 0%,rgba(15,13,10,0.85) 100%); }
+  .hero-content { position:relative; z-index:2; max-width:750px; padding:0 2rem; }
+  .hero-badge { display:inline-block; background:rgba(201,168,76,0.15); border:1px solid var(--gold); color:var(--gold); padding:0.4rem 1.2rem; border-radius:50px; font-size:0.8rem; font-weight:600; letter-spacing:2px; text-transform:uppercase; margin-bottom:1.5rem; }
+  .hero-title { font-size:clamp(3rem,8vw,6rem); font-weight:900; line-height:1; margin-bottom:1.2rem; }
+  .hero-title .accent { color:var(--gold); }
+  .hero-sub { font-size:1.1rem; color:var(--muted); max-width:500px; margin:0 auto 2.5rem; line-height:1.7; }
+  .hero-btns { display:flex; gap:1rem; justify-content:center; flex-wrap:wrap; }
+  .hero-btns .btn { padding:0.9rem 2.2rem; font-size:1rem; }
+  .hero-scroll { position:absolute; bottom:2rem; left:50%; transform:translateX(-50%); color:var(--muted); font-size:0.8rem; letter-spacing:2px; display:flex; flex-direction:column; align-items:center; gap:0.5rem; }
+  .scroll-line { width:1px; height:40px; background:linear-gradient(to bottom,var(--gold),transparent); animation:scrollAnim 1.5s ease infinite; }
+  @keyframes scrollAnim { 0%{opacity:1;transform:scaleY(1)} 100%{opacity:0;transform:scaleY(0.3)} }
+
+  .section { padding:5rem 5%; }
+  .section-label { font-size:0.75rem; letter-spacing:3px; text-transform:uppercase; color:var(--gold); margin-bottom:0.7rem; }
+  .section-title { font-size:clamp(2rem,4vw,3rem); margin-bottom:1rem; }
+  .section-sub { color:var(--muted); max-width:550px; line-height:1.7; margin-bottom:3rem; }
+
+  /* featured dishes */
+  .dish-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(260px,1fr)); gap:1.5rem; }
+  .dish-card {
+    background:var(--surface); border:1px solid var(--border); border-radius:var(--radius);
+    overflow:hidden; cursor:pointer; transition:transform 0.3s,box-shadow 0.3s;
+  }
+  .dish-card:hover { transform:translateY(-6px); box-shadow:0 20px 50px rgba(0,0,0,0.5); }
+  .dish-img { width:100%; height:180px; object-fit:cover; display:block; }
+  .dish-img-placeholder { width:100%; height:180px; background:var(--surface2); display:flex; align-items:center; justify-content:center; font-size:1rem; color:var(--muted); }
+  .dish-body { padding:1.2rem; }
+  .dish-tag { font-size:0.7rem; letter-spacing:2px; text-transform:uppercase; color:var(--gold); margin-bottom:0.4rem; }
+  .dish-name { font-size:1.1rem; font-weight:700; margin-bottom:0.4rem; }
+  .dish-desc { font-size:0.82rem; color:var(--muted); margin-bottom:1rem; line-height:1.6; }
+  .dish-footer { display:flex; align-items:center; justify-content:space-between; }
+  .dish-price { font-size:1.2rem; font-weight:700; color:var(--gold); }
+  .add-btn { background:var(--gold); color:var(--bg); border:none; border-radius:50%; width:34px; height:34px; font-size:1.2rem; cursor:pointer; display:flex; align-items:center; justify-content:center; transition:background 0.2s; font-weight:700; }
+  .add-btn:hover { background:var(--gold-light); }
+
+  /* ---- ABOUT ---- */
+  .about-grid { display:grid; grid-template-columns:1fr 1fr; gap:4rem; align-items:center; }
+  .about-img-wrap { position:relative; }
+  .about-img-placeholder {
+    width: 100%; height: 400px; background: #fff; border-radius: 20px;
+    display: flex; align-items: center; justify-content: center; overflow: hidden;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+  }
+  .about-img-placeholder img { width: 100%; height: 100%; object-fit: contain; padding: 20px; }
+  .about-badge { position:absolute; bottom:-1.5rem; right:-1.5rem; background:var(--gold); color:var(--bg); border-radius:var(--radius); padding:1.5rem; text-align:center; }
+  .about-badge .num { font-size:2.5rem; font-weight:900; display:block; line-height:1; }
+  .about-badge .lbl { font-size:0.75rem; font-weight:600; }
+  .team-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:1.5rem; margin-top:3rem; }
+  .team-card { background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); padding:1.5rem; text-align:center; }
+  .team-av { width:70px; height:70px; border-radius:50%; background:var(--gold); margin:0 auto 1rem; display:flex; align-items:center; justify-content:center; font-size:2rem; }
+  .team-name { font-weight:700; margin-bottom:0.2rem; }
+  .team-role { font-size:0.8rem; color:var(--muted); }
+
+  /* ---- MENU ---- */
+  .menu-tabs { display:flex; gap:1rem; margin-bottom:2.5rem; flex-wrap:wrap; }
+  .tab-btn { padding:0.6rem 1.5rem; border-radius:50px; border:1.5px solid var(--border); background:transparent; color:var(--muted); cursor:pointer; font-family:'DM Sans',sans-serif; font-weight:500; transition:all 0.2s; }
+  .tab-btn.active, .tab-btn:hover { background:var(--gold); border-color:var(--gold); color:var(--bg); }
+
+  /* ---- CONTACT ---- */
+  .contact-grid { display:grid; grid-template-columns:1fr 1.2fr; gap:4rem; }
+  .contact-info { display:flex; flex-direction:column; gap:2rem; }
+  .contact-item { display:flex; gap:1rem; align-items:flex-start; }
+  .contact-icon { width:44px; height:44px; border-radius:10px; background:rgba(201,168,76,0.15); border:1px solid var(--border); display:flex; align-items:center; justify-content:center; font-size:1.2rem; flex-shrink:0; }
+  .contact-form { background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); padding:2.5rem; }
+  .form-group { margin-bottom:1.3rem; }
+  .form-group label { display:block; font-size:0.82rem; font-weight:600; color:var(--muted); margin-bottom:0.5rem; letter-spacing:0.5px; }
+  .form-group input, .form-group textarea, .form-group select {
+    width:100%; padding:0.85rem 1rem; border-radius:8px;
+    background:var(--surface2); border:1.5px solid var(--border); color:var(--text);
+    font-family:'DM Sans',sans-serif; font-size:0.9rem; transition:border-color 0.2s;
+  }
+  .form-group input:focus, .form-group textarea:focus, .form-group select:focus { outline:none; border-color:var(--gold); }
+  .form-group textarea { height:120px; resize:vertical; }
+
+  /* ---- AUTH ---- */
+  #auth-page { background:var(--bg); display:flex; align-items:center; justify-content:center; min-height:100vh; }
+  .auth-container { display:grid; grid-template-columns:1fr 1fr; min-height:calc(100vh - 70px); }
+  .auth-visual {
+    background:linear-gradient(135deg,#1a1208,#0a0906);
+    display:flex; align-items:center; justify-content:center; flex-direction:column;
+    padding:3rem; position:relative; overflow:hidden;
+  }
+  .auth-visual-bg { position:absolute; inset:0; background-image:url('https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=800&q=80'); background-size:cover; background-position:center; opacity:0.12; filter:sepia(60%); }
+  .auth-visual-content { position:relative; z-index:1; text-align:center; }
+  .auth-visual h2 { font-size:3rem; color:var(--gold); margin-bottom:1rem; }
+  .auth-visual p { color:var(--muted); max-width:320px; line-height:1.7; }
+  .auth-form-wrap { background:var(--surface); display:flex; align-items:center; justify-content:center; padding:3rem; }
+  .auth-form-inner { width:100%; max-width:420px; }
+  .auth-tabs { display:flex; border-bottom:1px solid var(--border); margin-bottom:2rem; }
+  .auth-tab { flex:1; padding:0.8rem; background:none; border:none; color:var(--muted); font-family:'DM Sans',sans-serif; font-weight:600; font-size:0.9rem; cursor:pointer; border-bottom:2px solid transparent; transition:all 0.2s; }
+  .auth-tab.active { color:var(--gold); border-bottom-color:var(--gold); }
+  .auth-section { display:none; }
+  .auth-section.active { display:block; }
+  .auth-title { font-size:1.8rem; margin-bottom:0.4rem; }
+  .auth-sub { color:var(--muted); font-size:0.88rem; margin-bottom:2rem; }
+  .demo-accounts { background:var(--surface2); border:1px solid var(--border); border-radius:8px; padding:1rem; margin-bottom:1.5rem; }
+  .demo-accounts p { font-size:0.78rem; color:var(--gold); font-weight:600; letter-spacing:1px; text-transform:uppercase; margin-bottom:0.7rem; }
+  .demo-btn { width:100%; text-align:left; padding:0.6rem 0.8rem; background:transparent; border:1px solid var(--border); border-radius:6px; color:var(--text); font-family:'DM Sans',sans-serif; font-size:0.82rem; cursor:pointer; margin-bottom:0.4rem; transition:all 0.2s; display:flex; justify-content:space-between; align-items:center; }
+  .demo-btn:hover { background:rgba(201,168,76,0.1); border-color:var(--gold); }
+  .demo-btn span { color:var(--muted); font-size:0.75rem; }
+  .auth-or { text-align:center; color:var(--muted); font-size:0.82rem; margin:1rem 0; position:relative; }
+  .auth-or::before, .auth-or::after { content:''; position:absolute; top:50%; width:40%; height:1px; background:var(--border); }
+  .auth-or::before { left:0; }
+  .auth-or::after { right:0; }
+  .input-icon-wrap { position:relative; }
+  .input-icon-wrap input { padding-left:2.6rem; }
+  .input-icon { position:absolute; left:0.9rem; top:50%; transform:translateY(-50%); color:var(--muted); font-size:1rem; }
+  .forgot-link { font-size:0.8rem; color:var(--gold); text-decoration:none; float:right; margin-top:-0.5rem; cursor:pointer; }
+  .terms { font-size:0.78rem; color:var(--muted); margin-top:0.8rem; text-align:center; }
+  .terms a { color:var(--gold); }
+  .auth-error { background:rgba(192,57,43,0.15); border:1px solid var(--red); color:var(--red-light); padding:0.7rem 1rem; border-radius:8px; font-size:0.85rem; margin-bottom:1rem; display:none; }
+
+  /* ---- DASHBOARD ---- */
+  .dash-header { background:var(--surface); border-bottom:1px solid var(--border); padding:2rem 5%; margin-bottom:0; }
+  .dash-header h2 { font-size:1.8rem; }
+  .dash-header p { color:var(--muted); font-size:0.9rem; }
+  .dash-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(220px,1fr)); gap:1.5rem; padding:2.5rem 5%; }
+  .stat-card { background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); padding:1.5rem; }
+  .stat-icon { font-size:2rem; margin-bottom:0.8rem; }
+  .stat-num { font-size:2rem; font-weight:700; color:var(--gold); }
+  .stat-label { font-size:0.82rem; color:var(--muted); margin-top:0.2rem; }
+  .orders-section { padding:0 5% 3rem; }
+  .orders-title { font-size:1.3rem; margin-bottom:1.2rem; }
+  .order-row { background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); padding:1.2rem 1.5rem; margin-bottom:0.8rem; display:flex; align-items:center; gap:1.5rem; flex-wrap:wrap; }
+  .order-id { font-size:0.8rem; color:var(--muted); }
+  .order-items { flex:1; font-size:0.9rem; }
+  .order-price { font-weight:700; color:var(--gold); }
+  .order-status { padding:0.3rem 0.9rem; border-radius:50px; font-size:0.75rem; font-weight:600; }
+  .status-pending { background:rgba(201,168,76,0.15); color:var(--gold); }
+  .status-delivered { background:rgba(39,174,96,0.15); color:#27ae60; }
+  .status-cancelled { background:rgba(192,57,43,0.15); color:var(--red-light); }
+
+  /* ---- ADMIN ---- */
+  .admin-layout { display:grid; grid-template-columns:240px 1fr; min-height:calc(100vh - 70px); }
+  .admin-sidebar { background:var(--surface); border-right:1px solid var(--border); padding:2rem 0; }
+  .sidebar-brand { padding:0 1.5rem 2rem; font-family:'Playfair Display',serif; font-size:1.1rem; color:var(--gold); font-weight:700; }
+  .sidebar-nav { list-style:none; }
+  .sidebar-nav li { margin-bottom:0.2rem; }
+  .sidebar-nav a { display:flex; align-items:center; gap:0.8rem; padding:0.8rem 1.5rem; color:var(--muted); text-decoration:none; cursor:pointer; transition:all 0.2s; font-size:0.9rem; font-weight:500; }
+  .sidebar-nav a:hover, .sidebar-nav a.active { background:rgba(201,168,76,0.1); color:var(--gold); border-right:2px solid var(--gold); }
+  .admin-content { padding:2.5rem; overflow-y:auto; }
+  .admin-section { display:none; }
+  .admin-section.active { display:block; }
+  .admin-title { font-size:1.8rem; margin-bottom:2rem; }
+  .admin-stats { display:grid; grid-template-columns:repeat(4,1fr); gap:1.2rem; margin-bottom:2.5rem; }
+  .admin-stat { background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); padding:1.3rem; }
+  .admin-stat .num { font-size:2rem; font-weight:700; color:var(--gold); }
+  .admin-stat .lbl { font-size:0.8rem; color:var(--muted); }
+  .data-table { width:100%; border-collapse:collapse; }
+  .data-table th { text-align:left; padding:0.9rem 1rem; background:var(--surface2); color:var(--muted); font-size:0.8rem; font-weight:600; letter-spacing:0.5px; text-transform:uppercase; }
+  .data-table td { padding:0.9rem 1rem; border-bottom:1px solid var(--border); font-size:0.88rem; }
+  .data-table tr:hover td { background:rgba(201,168,76,0.05); }
+  .badge { padding:0.25rem 0.7rem; border-radius:50px; font-size:0.72rem; font-weight:600; }
+  .badge-user { background:rgba(52,152,219,0.15); color:#3498db; }
+  .badge-admin { background:rgba(201,168,76,0.15); color:var(--gold); }
+  .admin-form { background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); padding:2rem; max-width:600px; margin-bottom:2rem; }
+  .form-row { display:grid; grid-template-columns:1fr 1fr; gap:1rem; }
+
+  /* Image upload styling */
+  .img-upload-wrap { position:relative; }
+  .img-upload-wrap input[type="file"] {
+    width:100%; padding:0.7rem 1rem; border-radius:8px;
+    background:var(--surface2); border:1.5px dashed var(--border); color:var(--muted);
+    font-family:'DM Sans',sans-serif; font-size:0.85rem; cursor:pointer;
+    transition:border-color 0.2s;
+  }
+  .img-upload-wrap input[type="file"]:hover { border-color:var(--gold); }
+  #img-preview-wrap { margin-top:0.7rem; display:none; }
+  #img-preview { width:100%; height:140px; object-fit:cover; border-radius:8px; border:1px solid var(--border); }
+
+  /* ---- CART MODAL ---- */
+  .modal-overlay { position:fixed; inset:0; background:rgba(0,0,0,0.8); z-index:2000; display:none; align-items:center; justify-content:center; padding:1rem; }
+  .modal-overlay.open { display:flex; }
+  .modal { background:var(--surface); border:1px solid var(--border); border-radius:16px; width:100%; max-width:520px; max-height:85vh; overflow-y:auto; padding:2rem; }
+  .modal-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:1.5rem; }
+  .modal-title { font-size:1.4rem; }
+  .modal-close { background:none; border:none; color:var(--muted); font-size:1.5rem; cursor:pointer; line-height:1; }
+  .cart-item { display:flex; gap:1rem; align-items:center; padding:0.8rem 0; border-bottom:1px solid var(--border); }
+  .cart-item-emoji { font-size:1.8rem; width:44px; text-align:center; }
+  .cart-item-info { flex:1; }
+  .cart-item-name { font-weight:600; font-size:0.9rem; }
+  .cart-item-price { color:var(--gold); font-size:0.85rem; }
+  .qty-ctrl { display:flex; align-items:center; gap:0.5rem; }
+  .qty-btn { width:28px; height:28px; border-radius:50%; background:var(--surface2); border:1px solid var(--border); color:var(--text); cursor:pointer; font-size:1rem; display:flex; align-items:center; justify-content:center; }
+  .qty-num { min-width:24px; text-align:center; font-weight:600; }
+  .cart-total { display:flex; justify-content:space-between; align-items:center; padding:1.2rem 0 0; font-size:1.1rem; font-weight:700; }
+  .cart-total-price { color:var(--gold); font-size:1.4rem; }
+  .empty-cart { text-align:center; padding:2rem; color:var(--muted); }
+  .empty-cart .emoji { font-size:3rem; display:block; margin-bottom:0.8rem; }
+
+  /* ---- TOAST ---- */
+  #toast { position:fixed; bottom:2rem; right:2rem; background:var(--surface); border:1px solid var(--gold); border-radius:10px; padding:1rem 1.5rem; color:var(--text); font-size:0.88rem; z-index:9999; transform:translateY(100px); opacity:0; transition:all 0.3s; max-width:300px; }
+  #toast.show { transform:translateY(0); opacity:1; }
+
+  /* ---- FOOTER ---- */
+  footer { background:var(--surface); border-top:1px solid var(--border); padding:3rem 5% 1.5rem; }
+  .footer-grid { display:grid; grid-template-columns:2fr 1fr 1fr 1fr; gap:3rem; margin-bottom:2.5rem; }
+  .footer-brand h3 { font-size:1.5rem; color:var(--gold); margin-bottom:0.7rem; }
+  .footer-brand p { color:var(--muted); font-size:0.85rem; line-height:1.7; }
+  .footer-col h4 { font-size:0.85rem; font-weight:700; letter-spacing:1px; text-transform:uppercase; color:var(--gold); margin-bottom:1rem; }
+  .footer-col ul { list-style:none; }
+  .footer-col ul li { margin-bottom:0.5rem; }
+  .footer-col ul a { color:var(--muted); text-decoration:none; font-size:0.85rem; cursor:pointer; transition:color 0.2s; }
+  .footer-col ul a:hover { color:var(--gold); }
+  .footer-bottom { border-top:1px solid var(--border); padding-top:1.5rem; display:flex; justify-content:space-between; align-items:center; }
+  .footer-bottom p { color:var(--muted); font-size:0.8rem; }
+
+  /* ORDER CONFIRM */
+  .order-success { text-align:center; padding:3rem 2rem; }
+  .order-success .big-emoji { font-size:4rem; display:block; margin-bottom:1rem; }
+  .order-success h3 { font-size:2rem; margin-bottom:0.7rem; }
+  .order-success p { color:var(--muted); margin-bottom:1.5rem; }
+
+  /* Product thumbnail in admin table */
+  .prod-thumb { width:40px; height:40px; object-fit:cover; border-radius:6px; border:1px solid var(--border); }
+
+  /* Size dropdown on dish cards */
+  .size-select {
+    width:100%; margin-top:0.7rem; padding:0.6rem 0.8rem;
+    background:var(--surface2); border:1.5px solid var(--border);
+    color:var(--text); border-radius:8px;
+    font-family:'DM Sans',sans-serif; font-size:0.85rem;
+    cursor:pointer; transition:border-color 0.2s;
+  }
+  .size-select:focus, .size-select:hover { outline:none; border-color:var(--gold); }
+
+  @media(max-width:768px) {
+    .about-grid, .contact-grid, .auth-container, .admin-layout, .footer-grid { grid-template-columns:1fr; }
+    .admin-sidebar { display:none; }
+    .admin-stats { grid-template-columns:1fr 1fr; }
+    .hero-title { font-size:2.5rem; }
+    .form-row { grid-template-columns:1fr; }
+    .team-grid { grid-template-columns:1fr 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<!-- NAVBAR -->
+<nav id="navbar">
+  <div class="nav-logo" onclick="showPage('home')">El <span>Grato</span></div>
+  <ul class="nav-links">
+    <li><a onclick="showPage('home')" id="nav-home" class="active">Home</a></li>
+    <li><a onclick="showPage('about')" id="nav-about">About Us</a></li>
+    <li><a onclick="showPage('menu')" id="nav-menu">Menu</a></li>
+    <li><a onclick="showPage('contact')" id="nav-contact">Contact</a></li>
+  </ul>
+  <div class="nav-right">
+    <button id="cart-btn" onclick="openCart()">🛒 Cart <span id="cart-count">0</span></button>
+    <div id="user-info">
+      <div id="user-avatar">U</div>
+      <span id="user-name">User</span>
+      <button class="btn btn-danger" onclick="logout()" style="padding:0.4rem 1rem;font-size:0.8rem;">Logout</button>
+    </div>
+    <div id="auth-btns">
+      <button class="btn btn-outline" onclick="showPage('auth')">Log In / Register</button>
+    </div>
+  </div>
+</nav>
+
+<!-- HOME PAGE -->
+<div id="home" class="page active">
+  <section id="home-hero">
+    <div class="hero-bg"></div>
+    <div class="hero-overlay"></div>
+    <div class="hero-content">
+      <div class="hero-badge">🍽️ Premium Food Experience</div>
+      <h1 class="hero-title">El <span class="accent">Grato</span><br>Food Hub</h1>
+      <p class="hero-sub">Where every bite tells a story. Authentic flavors crafted with passion, served with love.</p>
+      <div class="hero-btns">
+        <button class="btn btn-primary" onclick="showPage('menu')">Explore Menu</button>
+        <button class="btn btn-outline" onclick="showPage('about')">Our Story</button>
+      </div>
+    </div>
+    <div class="hero-scroll">
+      <span>SCROLL</span>
+      <div class="scroll-line"></div>
+    </div>
+  </section>
+
+  <section class="section" style="padding-top:4rem">
+    <div class="section-label">Featured Today</div>
+    <h2 class="section-title">Chef's Selections</h2>
+    <p class="section-sub">Hand-picked dishes by our culinary team — freshly prepared and ready to delight.</p>
+    <div class="dish-grid" id="featured-dishes"></div>
+  </section>
+
+  <section class="section" style="background:var(--surface);margin:0 -5%;padding:5rem 10%">
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:2rem;text-align:center">
+      <div><div style="font-size:2.5rem;color:var(--gold);font-weight:900;font-family:'Playfair Display',serif">500+</div><div style="color:var(--muted);margin-top:0.3rem">Happy Customers</div></div>
+      <div><div style="font-size:2.5rem;color:var(--gold);font-weight:900;font-family:'Playfair Display',serif">80+</div><div style="color:var(--muted);margin-top:0.3rem">Menu Items</div></div>
+      <div><div style="font-size:2.5rem;color:var(--gold);font-weight:900;font-family:'Playfair Display',serif">15+</div><div style="color:var(--muted);margin-top:0.3rem">Years of Excellence</div></div>
+    </div>
+  </section>
+</div>
+
+<!-- ABOUT PAGE -->
+<div id="about" class="page">
+  <section class="section" style="padding-top:5rem">
+    <div class="about-grid">
+      <div class="about-img-wrap">
+        <div class="about-img-placeholder">
+          <img src="elgrato logo.jpg" alt="El Grato Logo">
+        </div>
+        <div class="about-badge"><span class="num">15+</span><div class="lbl">Years of<br>Excellence</div></div>
+      </div>
+      <div>
+        <div class="section-label">Our Story</div>
+        <h2 class="section-title">More Than Just Food</h2>
+        <p style="color:var(--muted);line-height:1.8;margin-bottom:1.5rem">El Grato Food Hub was born from a simple dream — to bring people together through the universal language of food. Founded in 2009, we have grown from a small family kitchen into one of the most beloved food destinations in the region.</p>
+        <p style="color:var(--muted);line-height:1.8;margin-bottom:2rem">Every dish we serve carries the warmth of tradition and the excitement of innovation. Our chefs source only the finest local ingredients, ensuring every bite is both authentic and extraordinary.</p>
+        <button class="btn btn-primary" onclick="showPage('menu')">View Our Menu</button>
+      </div>
+    </div>
+  </section>
+</div>
+
+<!-- MENU PAGE -->
+<div id="menu" class="page">
+  <section class="section" style="padding-top:5rem">
+    <div class="section-label">Our Menu</div>
+    <h2 class="section-title">What We Offer</h2>
+    <div class="menu-tabs">
+      <button class="tab-btn active" onclick="filterMenu('all',this)">All Items</button>
+      <button class="tab-btn" onclick="filterMenu('regular',this)">Regular Menu</button>
+      <button class="tab-btn" onclick="filterMenu('special',this)">Special Menu</button>
+    </div>
+    <div class="dish-grid" id="menu-dishes"></div>
+  </section>
+</div>
+
+<!-- CONTACT PAGE -->
+<div id="contact" class="page">
+  <section class="section" style="padding-top:5rem">
+    <div class="section-label">Get in Touch</div>
+    <h2 class="section-title">Contact Us</h2>
+    <div class="contact-grid">
+      <div class="contact-info">
+        <div><p style="color:var(--muted);line-height:1.7">Have a question, feedback, or special request? We'd love to hear from you. Reach out anytime!</p></div>
+        <div class="contact-item"><div class="contact-icon">📍</div><div><strong>Location</strong><p style="color:var(--muted);font-size:0.88rem;margin-top:0.3rem">123 Food Street, Caloocan City, Metro Manila, Philippines</p></div></div>
+        <div class="contact-item"><div class="contact-icon">📞</div><div><strong>Phone</strong><p style="color:var(--muted);font-size:0.88rem;margin-top:0.3rem">+63 912 345 6789</p></div></div>
+        <div class="contact-item"><div class="contact-icon">✉️</div><div><strong>Email</strong><p style="color:var(--muted);font-size:0.88rem;margin-top:0.3rem">hello@elgratofoodhub.com</p></div></div>
+        <div class="contact-item"><div class="contact-icon">🕐</div><div><strong>Hours</strong><p style="color:var(--muted);font-size:0.88rem;margin-top:0.3rem">Mon-Sun: 10:00 AM – 10:00 PM</p></div></div>
+      </div>
+      <div class="contact-form">
+        <h3 style="margin-bottom:1.5rem;font-size:1.3rem">Send a Message</h3>
+        <div class="form-group"><label>Your Name</label><input type="text" placeholder="Juan Dela Cruz"></div>
+        <div class="form-group"><label>Email Address</label><input type="email" placeholder="juan@email.com"></div>
+        <div class="form-group"><label>Subject</label><input type="text" placeholder="Reservation / Feedback / Inquiry"></div>
+        <div class="form-group"><label>Message</label><textarea placeholder="Write your message here..."></textarea></div>
+        <button class="btn btn-primary" style="width:100%;padding:0.9rem" onclick="showToast('Message sent! We\'ll get back to you soon. 📩')">Send Message</button>
+      </div>
+    </div>
+  </section>
+</div>
+
+<!-- AUTH PAGE -->
+<div id="auth" class="page" style="padding-top:70px">
+  <div class="auth-container">
+    <div class="auth-visual">
+      <div class="auth-visual-bg"></div>
+      <div class="auth-visual-content">
+        <h2>El Grato</h2>
+        <p>Sign in to unlock your personalized dining experience — order, track, and enjoy.</p>
+        <div style="margin-top:2rem;font-size:3rem">🍽️</div>
+      </div>
+    </div>
+    <div class="auth-form-wrap">
+      <div class="auth-form-inner">
+        <div class="auth-tabs">
+          <button class="auth-tab active" onclick="switchAuthTab('login')">Log In</button>
+          <button class="auth-tab" onclick="switchAuthTab('register')">Register</button>
+        </div>
+
+        <!-- LOGIN -->
+        <div id="auth-login" class="auth-section active">
+          <h2 class="auth-title">Welcome back</h2>
+          <p class="auth-sub">Log in to your El Grato account</p>
+          <div class="demo-accounts">
+            <p>🚀 Quick Demo Login</p>
+            <button class="demo-btn" onclick="demoLogin('user')">👤 User Account <span>user@elgrato.com / user123</span></button>
+            <button class="demo-btn" onclick="demoLogin('admin')">🛡️ Admin Account <span>admin@elgrato.com / admin123</span></button>
+          </div>
+          <div class="auth-or">or log in manually</div>
+          <div id="login-error" class="auth-error">Invalid email or password. Try the demo accounts above!</div>
+          <div class="form-group"><label>Email Address</label>
+            <div class="input-icon-wrap"><span class="input-icon">✉️</span><input type="email" id="login-email" placeholder="you@email.com"></div>
+          </div>
+          <div class="form-group"><label>Password <a class="forgot-link">Forgot password?</a></label>
+            <div class="input-icon-wrap"><span class="input-icon">🔒</span><input type="password" id="login-pass" placeholder="Enter your password"></div>
+          </div>
+          <button class="btn btn-primary" style="width:100%;padding:0.9rem;font-size:1rem;margin-top:0.5rem" onclick="doLogin()">Log In</button>
+          <p class="terms">Don't have an account? <a onclick="switchAuthTab('register')" style="cursor:pointer">Register here</a></p>
+        </div>
+
+        <!-- REGISTER -->
+        <div id="auth-register" class="auth-section">
+          <h2 class="auth-title">Create Account</h2>
+          <p class="auth-sub">Join El Grato Food Hub today</p>
+          <div id="register-error" class="auth-error"></div>
+          <div id="register-success" class="auth-error" style="background:rgba(39,174,96,0.15);border-color:#27ae60;color:#27ae60;"></div>
+          <div class="form-row">
+            <div class="form-group"><label>First Name</label><input type="text" id="reg-fname" placeholder="Juan"></div>
+            <div class="form-group"><label>Last Name</label><input type="text" id="reg-lname" placeholder="Dela Cruz"></div>
+          </div>
+          <div class="form-group"><label>Email Address</label>
+            <div class="input-icon-wrap"><span class="input-icon">✉️</span><input type="email" id="reg-email" placeholder="you@email.com"></div>
+          </div>
+          <div class="form-group"><label>Phone Number</label>
+            <div class="input-icon-wrap"><span class="input-icon">📞</span><input type="tel" id="reg-phone" placeholder="+63 9XX XXX XXXX"></div>
+          </div>
+          <div class="form-group"><label>Password</label>
+            <div class="input-icon-wrap"><span class="input-icon">🔒</span><input type="password" id="reg-pass" placeholder="At least 6 characters"></div>
+          </div>
+          <div class="form-group"><label>Confirm Password</label>
+            <div class="input-icon-wrap"><span class="input-icon">🔒</span><input type="password" id="reg-pass2" placeholder="Repeat password"></div>
+          </div>
+          <button class="btn btn-primary" style="width:100%;padding:0.9rem;font-size:1rem;margin-top:0.5rem" onclick="doRegister()">Create Account</button>
+          <p class="terms">Already have an account? <a onclick="switchAuthTab('login')" style="cursor:pointer">Log in here</a></p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- USER DASHBOARD -->
+<div id="dashboard" class="page">
+  <div class="dash-header">
+    <h2 id="dash-greeting">Welcome back!</h2>
+    <p>Manage your orders and feedback</p>
+  </div>
+  <div class="dash-grid">
+    <div class="stat-card"><div class="stat-icon">🛒</div><div class="stat-num" id="dash-orders">0</div><div class="stat-label">Total Orders</div></div>
+    <div class="stat-card"><div class="stat-icon">⭐</div><div class="stat-num">4.8</div><div class="stat-label">Your Rating</div></div>
+    <div class="stat-card"><div class="stat-icon">💰</div><div class="stat-num" id="dash-spent">₱0</div><div class="stat-label">Total Spent</div></div>
+    <div class="stat-card"><div class="stat-icon">🎁</div><div class="stat-num">Gold</div><div class="stat-label">Member Tier</div></div>
+  </div>
+  <div class="orders-section">
+    <h3 class="orders-title">Your Orders</h3>
+    <div id="user-orders-list"></div>
+    <div style="margin-top:1.5rem">
+      <h3 class="orders-title">Leave Feedback</h3>
+      <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:1.5rem;max-width:500px">
+        <div class="form-group"><label>Your Feedback</label><textarea placeholder="Tell us about your experience..."></textarea></div>
+        <div class="form-group"><label>Rating</label>
+          <select style="background:var(--surface2);border:1.5px solid var(--border);border-radius:8px;color:var(--text);padding:0.7rem;width:100%;font-family:'DM Sans',sans-serif">
+            <option>⭐⭐⭐⭐⭐ Excellent</option>
+            <option>⭐⭐⭐⭐ Very Good</option>
+            <option>⭐⭐⭐ Good</option>
+            <option>⭐⭐ Fair</option>
+            <option>⭐ Poor</option>
+          </select>
+        </div>
+        <button class="btn btn-primary" onclick="showToast('Feedback submitted! Thank you 🙏')">Submit Feedback</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ADMIN PANEL -->
+<div id="admin" class="page">
+  <div class="admin-layout">
+    <aside class="admin-sidebar">
+      <div class="sidebar-brand">⚙️ Admin Panel</div>
+      <ul class="sidebar-nav">
+        <li><a onclick="showAdminSection('admin-dash')" class="active" id="as-admin-dash">📊 Dashboard</a></li>
+        <li><a onclick="showAdminSection('admin-users')" id="as-admin-users">👥 User Management</a></li>
+        <li><a onclick="showAdminSection('admin-products')" id="as-admin-products">🍽️ Product Management</a></li>
+        <li><a onclick="showAdminSection('admin-orders')" id="as-admin-orders">📋 Orders</a></li>
+        <li><a onclick="logout()" style="color:var(--red-light)">🚪 Log Out</a></li>
+      </ul>
+    </aside>
+    <main class="admin-content">
+      <!-- Admin Dashboard -->
+      <div id="admin-dash" class="admin-section active">
+        <h2 class="admin-title">Admin Dashboard</h2>
+        <div class="admin-stats">
+          <div class="admin-stat"><div class="num" id="a-users">3</div><div class="lbl">Total Users</div></div>
+          <div class="admin-stat"><div class="num" id="a-products">12</div><div class="lbl">Menu Items</div></div>
+          <div class="admin-stat"><div class="num" id="a-orders">0</div><div class="lbl">Total Orders</div></div>
+          <div class="admin-stat"><div class="num" id="a-revenue">₱0</div><div class="lbl">Revenue</div></div>
+        </div>
+        <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:1.5rem">
+          <h3 style="margin-bottom:1rem;font-size:1rem">Recent Activity</h3>
+          <p style="color:var(--muted);font-size:0.85rem">📦 New order placed by demo user<br><br>👤 New user registered<br><br>🍔 Menu updated: Grilled Chicken Sandwich</p>
+        </div>
+      </div>
+      <!-- User Management -->
+      <div id="admin-users" class="admin-section">
+        <h2 class="admin-title">User Management</h2>
+        <div style="overflow-x:auto"><table class="data-table" id="users-table">
+          <thead><tr><th>ID</th><th>Name</th><th>Email</th><th>Role</th><th>Status</th><th>Action</th></tr></thead>
+          <tbody id="users-tbody"></tbody>
+        </table></div>
+      </div>
+      <!-- Product Management -->
+      <div id="admin-products" class="admin-section">
+        <h2 class="admin-title">Product Management</h2>
+        <div class="admin-form">
+          <h3 style="margin-bottom:1.2rem;font-size:1.1rem">Add New Item</h3>
+          <div class="form-row">
+            <div class="form-group"><label>Item Name</label><input type="text" id="p-name" placeholder="e.g. Spicy Ramen"></div>
+            <div class="form-group"><label>Price (₱)</label><input type="number" id="p-price" placeholder="250"></div>
+          </div>
+          <div class="form-row">
+            <div class="form-group"><label>Category</label>
+              <select id="p-cat" style="width:100%;padding:0.85rem;background:var(--surface2);border:1.5px solid var(--border);color:var(--text);border-radius:8px;font-family:'DM Sans',sans-serif">
+                <option value="regular">Regular Menu</option>
+                <option value="special">Special Menu</option>
+              </select>
+            </div>
+            <div class="form-group"><label>Item Image <span style="color:var(--muted);font-weight:400">(required)</span></label>
+              <div class="img-upload-wrap">
+                <input type="file" id="p-image" accept="image/*" onchange="previewProductImage(this)">
+              </div>
+              <div id="img-preview-wrap">
+                <img id="img-preview" src="" alt="Preview">
+                <button type="button" onclick="clearProductImage()" style="margin-top:0.5rem;background:transparent;border:1px solid var(--red);color:var(--red-light);border-radius:6px;padding:0.3rem 0.8rem;cursor:pointer;font-size:0.78rem;font-family:'DM Sans',sans-serif">✕ Remove Image</button>
+              </div>
+            </div>
+          </div>
+          <div class="form-group"><label>Description</label><textarea id="p-desc" placeholder="Brief description..." style="height:80px"></textarea></div>
+          <button class="btn btn-primary" onclick="adminAddProduct()">Add Item</button>
+        </div>
+        <div style="overflow-x:auto"><table class="data-table">
+          <thead><tr><th>Image</th><th>Name</th><th>Category</th><th>Price</th><th>Action</th></tr></thead>
+          <tbody id="products-tbody"></tbody>
+        </table></div>
+      </div>
+      <!-- Orders -->
+      <div id="admin-orders" class="admin-section">
+        <h2 class="admin-title">All Orders</h2>
+        <div id="admin-orders-list"></div>
+      </div>
+    </main>
+  </div>
+</div>
+
+<!-- CART MODAL -->
+<div class="modal-overlay" id="cart-modal">
+  <div class="modal">
+    <div class="modal-header">
+      <h3 class="modal-title">🛒 Your Cart</h3>
+      <button class="modal-close" onclick="closeCart()">✕</button>
+    </div>
+    <div id="cart-items-container"></div>
+    <div id="cart-footer"></div>
+  </div>
+</div>
+
+<!-- ORDER CONFIRM MODAL -->
+<div class="modal-overlay" id="order-modal">
+  <div class="modal">
+    <div class="order-success">
+      <span class="big-emoji">🎉</span>
+      <h3>Order Placed!</h3>
+      <p>Your order has been received and is being prepared. Estimated time: 20–30 minutes.</p>
+      <button class="btn btn-primary" onclick="closeOrderModal()">Back to Menu</button>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div id="toast"></div>
+
+<!-- FOOTER -->
+<footer id="site-footer">
+  <div class="footer-grid">
+    <div class="footer-brand">
+      <h3>El Grato</h3>
+      <p>Premium food experience crafted with passion, served with love. Your favorite food hub.</p>
+    </div>
+    <div class="footer-col">
+      <h4>Navigate</h4>
+      <ul>
+        <li><a onclick="showPage('home')">Home</a></li>
+        <li><a onclick="showPage('about')">About Us</a></li>
+        <li><a onclick="showPage('menu')">Menu</a></li>
+        <li><a onclick="showPage('contact')">Contact</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h4>Menu</h4>
+      <ul>
+        <li><a onclick="showPage('menu');filterMenu('regular',null)">Regular Menu</a></li>
+        <li><a onclick="showPage('menu');filterMenu('special',null)">Special Menu</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h4>Contact</h4>
+      <ul>
+        <li><a>📍 Caloocan, MM</a></li>
+        <li><a>📞 +63 912 345 6789</a></li>
+        <li><a>✉️ hello@elgrato.com</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <p>© 2025 El Grato Food Hub. All rights reserved.</p>
+    <p style="color:var(--muted);font-size:0.75rem">Made with ❤️ in the Philippines</p>
+  </div>
+</footer>
+
+<script>
+// ===== DATA =====
+let users = [
+  { id:1, fname:'Demo', lname:'User', email:'user@elgrato.com', password:'user123', role:'user', status:'active' },
+  { id:2, fname:'Admin', lname:'Grato', email:'admin@elgrato.com', password:'admin123', role:'admin', status:'active' },
+];
+let nextUserId = 3;
+
+// =====================================================================
+// MENU ITEMS — i-save ang mga larawan sa parehong folder ng HTML file
+// Palitan ang filename ng exact na pangalan ng iyong .jpg / .jpeg file
+// Halimbawa: image:'crispy-ulo.jpg'
+// =====================================================================
+const products = [
+  {
+    id:1, name:'Crispy Ulo', price:500, category:'best seller',
+    image:'crispy ulo.jpg',
+    desc:'Crispy pork head, crunchy on the outside and tender inside.',
+    sizes:[{label:'Small',price:500},{label:'Medium',price:600},{label:'Large',price:700},{label:'Jumbo',price:800},{label:'Super Jumbo',price:900},{label:'Monster Size',price:1000}]
+  },
+  {
+    id:2, name:'Crispy Dila', price:280, category:'Best seller',
+    image:'dila.jpeg',
+    desc:'Tender beef tongue fried to a perfect crisp.',
+    sizes:[{label:'Regular',price:280},{label:'Large',price:380}]
+  },
+  {
+    id:3, name:'Lechon Belly', price:245, category:'regular',
+    image:'lechonbelly.jpeg',
+    desc:'Crunchy pork belly with spiced vinegar dipping sauce.',
+    sizes:[{label:'Small 3kg',price:2300},{label:'Medium 5kg',price:3500},{label:'Large 7kg',price:4800}]
+  },
+  {
+    id:4, name:'Fried Baga', price:165, category:'regular',
+    image:'baga.jpg',
+    desc:'Stir-fried egg noodles with vegetables and choice of meat.',
+    sizes:[{label:'Regular',price:165},{label:'Large',price:230}]
+  },
+  {
+    id:5, name:'Tanglad Fried Chicken', price:295, category:'regular',
+    image:'chicken.jpeg',
+    desc:'Lemongrass-marinated fried chicken, golden and aromatic.',
+    sizes:[{label:'Half',price:295},{label:'Whole',price:540}]
+  },
+  {
+    id:6, name:'Fried Dila', price:320, category:'special',
+    image:'fried dila.jpg',
+    desc:'Crispy fried beef tongue with garlic butter dipping sauce.',
+    sizes:[{label:'Regular',price:320},{label:'Large',price:450}]
+  },
+  {
+    id:7, name:'Fried Itik', price:365, category:'special',
+    image:'itik.jpg',
+    desc:'Crispy fried native duck, juicy inside with golden crackling skin.',
+    sizes:[{label:'Regular',price:365},{label:'Large',price:500}]
+  },
+  {
+    id:8, name:'Crispy Pata', price:385, category:'special',
+    image:'pata.jpeg',
+    desc:'Slow-boiled then deep-fried pork leg — ultra crispy outside, juicy and tender inside.',
+    sizes:[{label:'Regular',price:385},{label:'Large',price:520}]
+  },
+  {
+    id:9, name:'Lechon Belly (Whole)', price:2300, category:'special',
+    image:'lechon belly whole.jpg',
+    desc:'Whole lechon belly with lemongrass stuffing, perfectly roasted with golden crispy skin.',
+    sizes:[{label:'Small 3kg',price:2300},{label:'Medium 5kg',price:3500},{label:'Large 7kg',price:4800}]
+  },
+  {
+    id:10, name:'Crispy Pata Buy 1 Take 1', price:770, category:'special',
+    image:'pata.jpeg',
+    desc:'Double the crunch, double the fun! Our famous crispy pata in a buy-one-take-one deal.',
+    sizes:[{label:'Regular',price:770}]
+  },
+];
+
+let menuItems = [...products];
+let nextProductId = 11;
+
+let cart = [];
+let allOrders = [];
+let currentUser = null;
+let pendingProductImage = null;
+
+// ===== IMAGE UPLOAD HELPERS =====
+function previewProductImage(input) {
+  const file = input.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    pendingProductImage = e.target.result;
+    document.getElementById('img-preview').src = pendingProductImage;
+    document.getElementById('img-preview-wrap').style.display = 'block';
+  };
+  reader.readAsDataURL(file);
+}
+
+function clearProductImage() {
+  pendingProductImage = null;
+  document.getElementById('p-image').value = '';
+  document.getElementById('img-preview').src = '';
+  document.getElementById('img-preview-wrap').style.display = 'none';
+}
+
+// ===== PAGE ROUTING =====
+function showPage(page) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-links a').forEach(a => a.classList.remove('active'));
+  const el = document.getElementById(page);
+  if (el) el.classList.add('active');
+  const navEl = document.getElementById('nav-' + page);
+  if (navEl) navEl.classList.add('active');
+  const footer = document.getElementById('site-footer');
+  footer.style.display = ['admin','auth','dashboard'].includes(page) ? 'none' : 'block';
+  window.scrollTo(0,0);
+}
+
+// ===== AUTH =====
+function switchAuthTab(tab) {
+  document.querySelectorAll('.auth-tab').forEach((t,i) => t.classList.toggle('active', (i===0&&tab==='login')||(i===1&&tab==='register')));
+  document.getElementById('auth-login').classList.toggle('active', tab==='login');
+  document.getElementById('auth-register').classList.toggle('active', tab==='register');
+}
+
+function demoLogin(type) {
+  if (type==='user') { document.getElementById('login-email').value='user@elgrato.com'; document.getElementById('login-pass').value='user123'; }
+  else { document.getElementById('login-email').value='admin@elgrato.com'; document.getElementById('login-pass').value='admin123'; }
+  doLogin();
+}
+
+function doLogin() {
+  const email = document.getElementById('login-email').value.trim();
+  const pass = document.getElementById('login-pass').value;
+  const user = users.find(u => u.email===email && u.password===pass);
+  const errEl = document.getElementById('login-error');
+  if (!user) { errEl.style.display='block'; return; }
+  errEl.style.display='none';
+  loginUser(user);
+}
+
+function loginUser(user) {
+  currentUser = user;
+  document.getElementById('auth-btns').style.display='none';
+  document.getElementById('user-info').style.display='flex';
+  document.getElementById('user-avatar').textContent = user.fname[0];
+  document.getElementById('user-name').textContent = user.fname;
+  if (user.role==='admin') {
+    showPage('admin');
+    refreshAdminData();
+  } else {
+    showPage('dashboard');
+    refreshDashboard();
+  }
+  showToast('Welcome back, ' + user.fname + '! 🎉');
+}
+
+function doRegister() {
+  const fname = document.getElementById('reg-fname').value.trim();
+  const lname = document.getElementById('reg-lname').value.trim();
+  const email = document.getElementById('reg-email').value.trim();
+  const phone = document.getElementById('reg-phone').value.trim();
+  const pass = document.getElementById('reg-pass').value;
+  const pass2 = document.getElementById('reg-pass2').value;
+  const errEl = document.getElementById('register-error');
+  const sucEl = document.getElementById('register-success');
+  errEl.style.display='none'; sucEl.style.display='none';
+  if (!fname||!lname||!email||!pass) { errEl.textContent='Please fill all fields.'; errEl.style.display='block'; return; }
+  if (pass.length < 6) { errEl.textContent='Password must be at least 6 characters.'; errEl.style.display='block'; return; }
+  if (pass !== pass2) { errEl.textContent='Passwords do not match.'; errEl.style.display='block'; return; }
+  if (users.find(u => u.email===email)) { errEl.textContent='Email already registered.'; errEl.style.display='block'; return; }
+  const newUser = { id: nextUserId++, fname, lname, email, phone, password: pass, role:'user', status:'active' };
+  users.push(newUser);
+  sucEl.textContent='Account created! You can now log in.';
+  sucEl.style.display='block';
+  setTimeout(() => { switchAuthTab('login'); document.getElementById('login-email').value=email; }, 1500);
+}
+
+function logout() {
+  currentUser = null;
+  document.getElementById('auth-btns').style.display='flex';
+  document.getElementById('user-info').style.display='none';
+  cart = [];
+  updateCartCount();
+  showPage('home');
+  showToast('You have been logged out.');
+}
+
+// ===== MENU RENDERING =====
+function renderDishes(container, items) {
+  const el = document.getElementById(container);
+  if (!el) return;
+  el.innerHTML = items.map(d => {
+    const imgHtml = d.image
+      ? `<img class="dish-img" src="${d.image}" alt="${d.name}" onerror="this.parentNode.innerHTML='<div class=\\'dish-img-placeholder\\'>No Image</div>'">`
+      : `<div class="dish-img-placeholder">No Image</div>`;
+    const hasSizes = d.sizes && d.sizes.length > 1;
+    const sizeSelect = hasSizes
+      ? `<select id="size-${d.id}" class="size-select" onchange="updateDishPrice(${d.id},this)">
+          ${d.sizes.map(s=>`<option value="${s.price}" data-label="${s.label}">${s.label} — ₱${s.price}</option>`).join('')}
+        </select>`
+      : '';
+    const basePrice = d.sizes ? d.sizes[0].price : d.price;
+    return `
+      <div class="dish-card">
+        ${imgHtml}
+        <div class="dish-body">
+          <div class="dish-tag">${d.category==='special'?'✨ Special':'🍽️ Regular'}</div>
+          <div class="dish-name">${d.name}</div>
+          <div class="dish-desc">${d.desc}</div>
+          ${sizeSelect}
+          <div class="dish-footer" style="margin-top:0.8rem">
+            <div class="dish-price" id="price-${d.id}">₱${basePrice}</div>
+            <button class="add-btn" onclick="addToCart(${d.id})" title="Add to cart">+</button>
+          </div>
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+function updateDishPrice(id, sel) {
+  const el = document.getElementById('price-' + id);
+  if (el) el.textContent = '₱' + sel.value;
+}
+
+let currentFilter = 'all';
+function filterMenu(cat, btn) {
+  currentFilter = cat;
+  if (btn) { document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active')); btn.classList.add('active'); }
+  const items = cat==='all' ? menuItems : menuItems.filter(d => d.category===cat);
+  renderDishes('menu-dishes', items);
+}
+
+// ===== CART =====
+function addToCart(id) {
+  if (!currentUser) { showPage('auth'); showToast('Please log in to add items to cart 🔐'); return; }
+  const item = menuItems.find(d => d.id===id);
+  const selEl = document.getElementById('size-' + id);
+  const selectedPrice = selEl ? parseInt(selEl.value) : (item.sizes ? item.sizes[0].price : item.price);
+  const selectedSize = selEl ? selEl.options[selEl.selectedIndex].getAttribute('data-label') : (item.sizes ? item.sizes[0].label : null);
+  const cartKey = id + '-' + (selectedSize || 'default');
+  const existing = cart.find(c => c.cartKey === cartKey);
+  if (existing) {
+    existing.qty++;
+  } else {
+    cart.push({ ...item, cartKey, price: selectedPrice, selectedSize, qty: 1 });
+  }
+  updateCartCount();
+  const sizeLabel = selectedSize ? ` (${selectedSize})` : '';
+  showToast(item.name + sizeLabel + ' added to cart!');
+}
+
+function updateCartCount() {
+  const total = cart.reduce((s,c)=>s+c.qty,0);
+  document.getElementById('cart-count').textContent = total;
+}
+
+function openCart() {
+  const cont = document.getElementById('cart-items-container');
+  const foot = document.getElementById('cart-footer');
+  if (cart.length===0) {
+    cont.innerHTML = `<div class="empty-cart"><span class="emoji">🛒</span><p>Your cart is empty</p><button class="btn btn-primary" style="margin-top:1rem" onclick="closeCart();showPage('menu')">Browse Menu</button></div>`;
+    foot.innerHTML='';
+  } else {
+    cont.innerHTML = cart.map(c => {
+      const thumb = c.image
+        ? `<img src="${c.image}" style="width:44px;height:44px;object-fit:cover;border-radius:8px;border:1px solid var(--border);">`
+        : `<div style="width:44px;height:44px;background:var(--surface2);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:0.6rem;color:var(--muted);text-align:center">No Img</div>`;
+      const sizeLabel = c.selectedSize ? ` <span style="color:var(--gold);font-size:0.75rem">(${c.selectedSize})</span>` : '';
+      return `
+        <div class="cart-item">
+          ${thumb}
+          <div class="cart-item-info">
+            <div class="cart-item-name">${c.name}${sizeLabel}</div>
+            <div class="cart-item-price">₱${c.price} each</div>
+          </div>
+          <div class="qty-ctrl">
+            <button class="qty-btn" onclick="changeQty('${c.cartKey}',-1)">−</button>
+            <span class="qty-num">${c.qty}</span>
+            <button class="qty-btn" onclick="changeQty('${c.cartKey}',1)">+</button>
+          </div>
+          <div style="font-weight:700;color:var(--gold);min-width:60px;text-align:right">₱${c.price*c.qty}</div>
+        </div>
+      `;
+    }).join('');
+    const total = cart.reduce((s,c)=>s+c.price*c.qty,0);
+    foot.innerHTML = `
+      <div class="cart-total"><span>Total</span><span class="cart-total-price">₱${total}</span></div>
+      <button class="btn btn-primary" style="width:100%;padding:0.9rem;margin-top:1rem;font-size:1rem" onclick="placeOrder()">Place Order</button>
+    `;
+  }
+  document.getElementById('cart-modal').classList.add('open');
+}
+
+function closeCart() { document.getElementById('cart-modal').classList.remove('open'); }
+
+function changeQty(cartKey, delta) {
+  const item = cart.find(c => c.cartKey === cartKey);
+  if (!item) return;
+  item.qty += delta;
+  if (item.qty<=0) cart = cart.filter(c=>c.cartKey!==cartKey);
+  updateCartCount();
+  openCart();
+}
+
+function placeOrder() {
+  if (!currentUser) return;
+  const total = cart.reduce((s,c)=>s+c.price*c.qty,0);
+  const order = { id: 'ORD-' + Date.now(), userId: currentUser.id, user: currentUser.fname + ' ' + currentUser.lname, items: [...cart], total, status:'pending', date: new Date().toLocaleDateString() };
+  allOrders.push(order);
+  cart = [];
+  updateCartCount();
+  closeCart();
+  document.getElementById('order-modal').classList.add('open');
+  if (currentUser.role==='admin') refreshAdminData();
+  else refreshDashboard();
+}
+
+function closeOrderModal() {
+  document.getElementById('order-modal').classList.remove('open');
+  showPage('menu');
+}
+
+// ===== DASHBOARD =====
+function refreshDashboard() {
+  if (!currentUser) return;
+  document.getElementById('dash-greeting').textContent = 'Welcome back, ' + currentUser.fname + '! 👋';
+  const myOrders = allOrders.filter(o=>o.userId===currentUser.id);
+  const spent = myOrders.reduce((s,o)=>s+o.total,0);
+  document.getElementById('dash-orders').textContent = myOrders.length;
+  document.getElementById('dash-spent').textContent = '₱' + spent;
+  const list = document.getElementById('user-orders-list');
+  if (myOrders.length===0) { list.innerHTML='<p style="color:var(--muted)">No orders yet. <a onclick="showPage(\'menu\')" style="color:var(--gold);cursor:pointer">Browse our menu!</a></p>'; return; }
+  list.innerHTML = myOrders.map(o=>`
+    <div class="order-row">
+      <div class="order-id">${o.id}</div>
+      <div class="order-items">${o.items.map(i=>i.name+' x'+i.qty).join(', ')}</div>
+      <div class="order-price">₱${o.total}</div>
+      <div class="order-status status-${o.status}">${o.status.charAt(0).toUpperCase()+o.status.slice(1)}</div>
+      <div style="font-size:0.78rem;color:var(--muted)">${o.date}</div>
+    </div>
+  `).join('');
+}
+
+// ===== ADMIN =====
+function showAdminSection(sec) {
+  document.querySelectorAll('.admin-section').forEach(s=>s.classList.remove('active'));
+  document.querySelectorAll('.sidebar-nav a').forEach(a=>a.classList.remove('active'));
+  document.getElementById(sec).classList.add('active');
+  document.getElementById('as-'+sec).classList.add('active');
+  refreshAdminData();
+}
+
+function refreshAdminData() {
+  document.getElementById('a-users').textContent = users.length;
+  document.getElementById('a-products').textContent = menuItems.length;
+  document.getElementById('a-orders').textContent = allOrders.length;
+  const rev = allOrders.reduce((s,o)=>s+o.total,0);
+  document.getElementById('a-revenue').textContent = '₱'+rev;
+
+  const tbody = document.getElementById('users-tbody');
+  if (tbody) tbody.innerHTML = users.map(u=>`
+    <tr>
+      <td>#${u.id}</td>
+      <td>${u.fname} ${u.lname}</td>
+      <td>${u.email}</td>
+      <td><span class="badge badge-${u.role}">${u.role}</span></td>
+      <td><span class="badge" style="background:rgba(39,174,96,0.15);color:#27ae60">${u.status}</span></td>
+      <td><button class="btn btn-danger" style="padding:0.3rem 0.8rem;font-size:0.75rem" onclick="removeUser(${u.id})">Remove</button></td>
+    </tr>
+  `).join('');
+
+  const ptbody = document.getElementById('products-tbody');
+  if (ptbody) ptbody.innerHTML = menuItems.map(p=>`
+    <tr>
+      <td>
+        ${p.image
+          ? `<img src="${p.image}" class="prod-thumb" alt="${p.name}">`
+          : `<div style="width:40px;height:40px;background:var(--surface2);border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:0.6rem;color:var(--muted)">No Img</div>`
+        }
+      </td>
+      <td>${p.name}</td>
+      <td><span class="badge" style="background:rgba(201,168,76,0.15);color:var(--gold)">${p.category}</span></td>
+      <td>₱${p.price}</td>
+      <td><button class="btn btn-danger" style="padding:0.3rem 0.8rem;font-size:0.75rem" onclick="removeProduct(${p.id})">Remove</button></td>
+    </tr>
+  `).join('');
+
+  const aol = document.getElementById('admin-orders-list');
+  if (aol) {
+    if (allOrders.length===0) { aol.innerHTML='<p style="color:var(--muted)">No orders yet.</p>'; return; }
+    aol.innerHTML = allOrders.map(o=>`
+      <div class="order-row">
+        <div class="order-id">${o.id}</div>
+        <div><strong>${o.user}</strong></div>
+        <div class="order-items" style="flex:1">${o.items.map(i=>i.name+' x'+i.qty).join(', ')}</div>
+        <div class="order-price">₱${o.total}</div>
+        <select onchange="updateOrderStatus('${o.id}',this.value)" style="background:var(--surface2);border:1px solid var(--border);color:var(--text);padding:0.3rem 0.5rem;border-radius:6px;font-family:'DM Sans',sans-serif;font-size:0.8rem">
+          <option ${o.status==='pending'?'selected':''}>pending</option>
+          <option ${o.status==='delivered'?'selected':''}>delivered</option>
+          <option ${o.status==='cancelled'?'selected':''}>cancelled</option>
+        </select>
+      </div>
+    `).join('');
+  }
+}
+
+function removeUser(id) {
+  if (id===currentUser.id) { showToast('Cannot remove yourself!'); return; }
+  users = users.filter(u=>u.id!==id);
+  refreshAdminData();
+  showToast('User removed.');
+}
+
+function removeProduct(id) {
+  menuItems = menuItems.filter(p=>p.id!==id);
+  filterMenu(currentFilter, null);
+  refreshAdminData();
+  showToast('Product removed.');
+}
+
+function adminAddProduct() {
+  const name = document.getElementById('p-name').value.trim();
+  const price = parseInt(document.getElementById('p-price').value);
+  const category = document.getElementById('p-cat').value;
+  const desc = document.getElementById('p-desc').value.trim();
+  if (!name || !price) { showToast('Please fill name and price!'); return; }
+  menuItems.push({
+    id: nextProductId++,
+    name, price, category,
+    image: pendingProductImage || null,
+    desc: desc || 'Freshly prepared dish.',
+    sizes: [{ label: 'Regular', price }]
+  });
+  document.getElementById('p-name').value='';
+  document.getElementById('p-price').value='';
+  document.getElementById('p-desc').value='';
+  clearProductImage();
+  filterMenu(currentFilter, null);
+  refreshAdminData();
+  showToast('Product added! 🎉');
+}
+
+function updateOrderStatus(orderId, status) {
+  const order = allOrders.find(o=>o.id===orderId);
+  if (order) order.status = status;
+  showToast('Order status updated to: ' + status);
+}
+
+// ===== TOAST =====
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),3000);
+}
+
+// ===== INIT =====
+renderDishes('featured-dishes', menuItems.slice(0,4));
+renderDishes('menu-dishes', menuItems);
+
+document.querySelector('.nav-links').insertAdjacentHTML('beforeend',
+  '<li><a onclick="goToDash()" id="nav-dash" style="display:none">My Account</a></li>'
+);
+function goToDash() {
+  if (!currentUser) return;
+  if (currentUser.role==='admin') showPage('admin');
+  else showPage('dashboard');
+}
+
+document.querySelectorAll('.modal-overlay').forEach(m => {
+  m.addEventListener('click', e => { if(e.target===m) { m.classList.remove('open'); } });
+});
+</script>
+</body>
+</html>
